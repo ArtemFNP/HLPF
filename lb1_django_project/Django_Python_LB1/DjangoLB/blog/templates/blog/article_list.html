@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ page_title|default:"Статті" }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; color: #333; }
+        .container { max-width: 900px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        header { padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; }
+        header h1 { margin: 0; color: #343a40; }
+        nav a { margin-right: 15px; text-decoration: none; color: #007bff; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .sorting-options { margin-bottom: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px; }
+        .sorting-options strong { margin-right: 10px; }
+        .sorting-options a { margin-right: 10px; text-decoration: none; color: #007bff; padding: 5px 10px; border-radius: 4px; }
+        .sorting-options a:hover { background-color: #007bff; color: white; }
+        .sorting-options a.active { background-color: #0056b3; color: white; font-weight: bold; }
+        .article-item { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed #ddd; }
+        .article-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .article-item h2 { margin-top: 0; margin-bottom: 5px; }
+        /* Якщо посилання буде активним, ці стилі для нього: */
+        /* .article-item h2 a { text-decoration: none; color: #28a745; } */
+        /* .article-item h2 a:hover { color: #218838; } */
+        .article-meta { font-size: 0.85em; color: #6c757d; margin-bottom: 10px; }
+        .article-content { line-height: 1.6; }
+        .no-articles { text-align: center; padding: 20px; color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Мій Блог</h1>
+            <nav>
+                <a href="{% url 'blog:article_list' %}">Всі статті</a>
+                <a href="{% url 'blog:category_list' %}">Категорії</a>
+                <a href="{% url 'admin:index' %}" target="_blank">Адмін-панель</a>
+            </nav>
+        </header>
+
+        <h2>{{ page_title }} (Сортування: {{ current_sorting_text }})</h2>
+
+        <div class="sorting-options">
+            <strong>Сортувати за:</strong>
+            <a href="{% url 'blog:article_list' %}?sort_by=date" class="{% if current_sorting_param == 'date' %}active{% endif %}">Датою публікації</a>
+            <a href="{% url 'blog:article_list' %}?sort_by=comments" class="{% if current_sorting_param == 'comments' %}active{% endif %}">Кількістю коментарів</a>
+        </div>
+
+        {% if articles %}
+            {% for article in articles %}
+                <div class="article-item">
+                    <h2>
+                        {% comment %}
+                        Наступний блок коду тимчасово закоментовано,
+                        доки ми не реалізуємо URL 'blog:article_detail'.
+                        Коли URL 'blog:article_detail' буде готовий у blog/urls.py та views.py,
+                        розкоментуйте цей блок <a href...>...</a>
+                        і видаліть рядок {{ article.title }} що йде після нього.
+                        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                        {% endcomment %}
+                        {{ article.title }} <!-- Показуємо заголовок як текст, поки посилання не активне -->
+                    </h2>
+                    <p class="article-meta">
+                        Категорія: {{ article.category.name }} |
+                        Опубліковано: {{ article.publication_date|date:"d.m.Y H:i" }} |
+                        Автор: {{ article.author.username|default:"Не вказано" }} |
+                        Коментарів: {{ article.comment_count }}
+                        {% if current_sorting_param == 'comments' %}
+                            (Сорт.значення: {{ article.num_comments_for_sorting }}) <!-- Для відладки анотації -->
+                        {% endif %}
+                    </p>
+                    <div class="article-content">
+                        {{ article.content|truncatewords_html:40|safe }}
+                        <!-- Посилання "Читати далі..." додамо, коли буде сторінка статті -->
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-articles">Ще немає жодної статті. Ви можете <a href="{% url 'admin:blog_article_add' %}">додати статтю</a> в адмін-панелі.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

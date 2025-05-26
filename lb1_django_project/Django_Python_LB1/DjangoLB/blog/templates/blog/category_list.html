@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Список категорій</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        h1 { color: #5a5a5a; }
+        ul { list-style-type: none; padding: 0; }
+        li { background-color: #fff; margin-bottom: 10px; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        li a { text-decoration: none; color: #007bff; font-weight: bold; }
+        li a:hover { text-decoration: underline; }
+        .article-count { color: #6c757d; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Категорії</h1>
+    {% if categories %}
+        <ul>
+            {% for category in categories %}
+                <li>
+                    
+                 <a href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+                    <span class="article-count"> (Статей: {{ category.num_articles }})</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Ще немає жодної категорії.</p>
+    {% endif %}
+
+    <p><a href="{% url 'admin:index' %}">Перейти до Адмін-панелі</a></p>
+</body>
+</html>
